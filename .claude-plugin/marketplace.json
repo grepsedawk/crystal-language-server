@@ -1,0 +1,31 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "crystal-language-server",
+  "description": "Crystal language server plugin for Claude Code",
+  "owner": {
+    "name": "Ally Piechowski",
+    "email": "alex@piechowski.org"
+  },
+  "plugins": [
+    {
+      "name": "crystal-lsp",
+      "description": "Crystal language server — LSP for Crystal, providing diagnostics, hover, goto-definition, completion, semantic tokens, inlay hints, call hierarchy, and more",
+      "version": "0.1.0",
+      "author": {
+        "name": "Ally Piechowski",
+        "email": "alex@piechowski.org"
+      },
+      "source": "./plugin",
+      "category": "development",
+      "strict": false,
+      "lspServers": {
+        "crystal": {
+          "command": "crystal-language-server",
+          "extensionToLanguage": {
+            ".cr": "crystal"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+
+jobs:
+  test:
+    name: test (crystal ${{ matrix.crystal }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        crystal: ["1.17.0", "1.18.1", "1.19.1"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Crystal ${{ matrix.crystal }}
+        uses: crystal-lang/install-crystal@v1
+        with:
+          crystal: ${{ matrix.crystal }}
+
+      - name: Cache shards
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/shards
+            lib
+          key: shards-${{ runner.os }}-crystal-${{ matrix.crystal }}-${{ hashFiles('shard.lock') }}
+          restore-keys: |
+            shards-${{ runner.os }}-crystal-${{ matrix.crystal }}-
+
+      - name: Install dependencies
+        run: shards install
+
+      - name: Build
+        run: shards build --no-debug
+
+      - name: Run specs
+        run: crystal spec
+
+  format-check:
+    name: format check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
+        with:
+          crystal: "1.19.1"
+
+      - name: Check formatting
+        run: crystal tool format --check src spec

@@ -1,0 +1,36 @@
+name: crystal-language-server
+version: 0.1.0
+
+authors:
+  - Alex Piechowski <alex@piechowski.org>
+
+description: |
+  A Language Server Protocol implementation for the Crystal programming
+  language. Provides hover, goto-definition, formatting, document symbols,
+  completion, diagnostics and semantic tokens over stdio JSON-RPC.
+
+targets:
+  crystal-language-server:
+    main: src/crystal-language-server.cr
+
+crystal: ">= 1.0.0"
+
+license: MIT
+
+# These are the Crystal compiler's own transitive deps. We only
+# actually pull them into the binary when building the embedded
+# adapter (CRYSTAL_SOURCE_PATH set at build time); in subprocess mode
+# they go unused. Kept here rather than as build-time `if` because
+# shards doesn't support conditional dependencies.
+dependencies:
+  markd:
+    github: icyleaf/markd
+  reply:
+    github: I3oris/reply
+    commit: 13f7eba083f138dd063c68b859c8e315f44fb523
+  sanitize:
+    github: straight-shoota/sanitize
+    commit: 75c141b619c77956e88f557149566cd28876398b
+
+scripts:
+  postinstall: echo 'crystal-language-server installed; build with shards build --release'

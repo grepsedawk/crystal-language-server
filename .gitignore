@@ -1,0 +1,8 @@
+/docs/
+/lib/
+/bin/crystal-language-server
+/.shards/
+*.dwarf
+/shard.lock
+/.claude/settings.local.json
+/.claude/scheduled_tasks.lock
