@@ -336,4 +336,35 @@ describe "scope-aware navigation" do
   ensure
     WorkspaceIndex.invalidate_all
   end
+
+  it "resolves a call to a private method in the same class" do
+    uri = "file:///private-method-goto.cr"
+    source = <<-CR
+      class Xxx
+        def xyz
+          helper
+        end
+
+        private def helper
+          42
+        end
+      end
+      CR
+
+    ws = ws_with_doc(uri, source)
+    WorkspaceIndex.invalidate_all
+    WorkspaceIndex.reindex_file_from_document(DocumentUri.to_path(uri), ws.documents[uri])
+
+    call_line = source.lines.index! { |l| l.strip == "helper" }
+    col = source.lines[call_line].index!("helper") + 2
+    result = Handlers::Definition.handle(ws, goto_params(uri, call_line, col))
+    result.should_not be_nil
+    raise "unreachable" unless result
+    locs = result.as(Array)
+    decl_line = source.lines.index! { |l| l.includes?("private def helper") }
+    locs.size.should eq 1
+    locs.first[:range].start.line.should eq decl_line
+  ensure
+    WorkspaceIndex.invalidate_all
+  end
 end

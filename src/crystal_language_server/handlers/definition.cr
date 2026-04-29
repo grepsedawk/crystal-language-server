@@ -142,7 +142,9 @@ module CrystalLanguageServer
           next unless tok.kind == Scanner::Token::Kind::Identifier
           next unless tok.text == word
           next if tok.byte_start == def_name_byte
-          next if tok.byte_start >= cursor_byte
+          # Without this, a call like `helper` matches itself as its
+          # own "binding" and masks the workspace lookup of the def.
+          next if cursor_byte <= tok.byte_end
 
           return [{
             uri:   uri,
